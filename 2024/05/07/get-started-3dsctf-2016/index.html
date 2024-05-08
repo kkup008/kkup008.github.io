@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="Pwn">
 <meta property="og:description" content="这是buu的一道pwn题，当然，写下这篇文章的目的是为了说一些细节，今天我看到了一篇文章上面写下了对这道题的看法，稍有不足之处我略微补充 思路跳转其实首先我们看到这道题的方法应该是绕过if判断这里我们看到有两行jnz这是判断语句，我们需要的是跳转到之后的mov传参的过程，注意这个传参传的是fopen的参数，跳转到mov即可绕过判断获得flag 覆盖我写文章的目的主要是为了说明覆盖，我在网上看到了好">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kkup008.github.io/.io//QQ%E5%9B%BE%E7%89%8720240507210532.png">
-<meta property="og:image" content="https://kkup008.github.io/.io//QQ%E5%9B%BE%E7%89%8720240507211023.png">
-<meta property="og:image" content="https://kkup008.github.io/.io//QQ%E5%9B%BE%E7%89%8720240507212841.png">
+<meta property="og:image" content="https://kkup008.github.io/pic/get-started-3dsctf-2016/get1.png">
+<meta property="og:image" content="https://kkup008.github.io/pic/get-started-3dsctf-2016/get2.png">
+<meta property="og:image" content="https://kkup008.github.io/pic/get-started-3dsctf-2016/get3.png">
 <meta property="article:published_time" content="2024-05-07T13:40:55.000Z">
-<meta property="article:modified_time" content="2024-05-07T13:45:39.951Z">
+<meta property="article:modified_time" content="2024-05-07T16:16:30.556Z">
 <meta property="article:author" content="骆温情">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kkup008.github.io/.io//QQ%E5%9B%BE%E7%89%8720240507210532.png">
+<meta name="twitter:image" content="https://kkup008.github.io/pic/get-started-3dsctf-2016/get1.png">
   
   
   
@@ -277,8 +277,8 @@
               <div class="markdown-body">
                 
                 <p>这是buu的一道pwn题，当然，写下这篇文章的目的是为了说一些细节，今天我看到了一篇文章上面写下了对这道题的看法，稍有不足之处我略微补充</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h3><p>其实首先我们看到这道题的方法应该是绕过if判断<br><img src="/.io//QQ%E5%9B%BE%E7%89%8720240507210532.png" srcset="/img/loading.gif" lazyload alt="alt text"><br>这里我们看到有两行jnz这是判断语句，<br>我们需要的是跳转到之后的mov传参的过程，<br>注意这个传参传的是fopen的参数，<br>跳转到mov即可绕过判断获得flag</p>
-<h3 id="覆盖"><a href="#覆盖" class="headerlink" title="覆盖"></a>覆盖</h3><p>我写文章的目的主要是为了说明覆盖，我在网上看到了好多说的不可以覆盖，原因主要是因为参数a1和a2在ret的下面，因此出现了覆盖的一些细节问题，下面我详细说说<br>1.显而易见，我们可以看到参数的位置关系以及距离<br><img src="/.io//QQ%E5%9B%BE%E7%89%8720240507211023.png" srcset="/img/loading.gif" lazyload alt="alt text"><br>然后首先这道题我最初是覆盖做的，而后来我发现直接覆盖的话并没有得到想要的结果，原因就是因为中间有了一个ret，那么这个覆盖到底能不能实现判断正确从而获取flag呢？对此，我想说说我的理解，首先这个ret的位置是在[ebp+0]的位置，这意味着如果我们直接跳转到函数地址之后再加上参数，会出现这样一种情况<br>a1  对应   [ebp+0]<br>a2  对应   [ebp+4]<br>而实际上，对于这个实际情况来看，显然a1和a2的位置是出现在偏后一个字长的距离，那也就意味着这里似乎我们需要加一个“假”的地址来欺骗系统，以至于达到我们的目的—覆盖参数</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h3><p>其实首先我们看到这道题的方法应该是绕过if判断<br><img src="/../pic/get-started-3dsctf-2016/get1.png" srcset="/img/loading.gif" lazyload alt="alt text"><br>这里我们看到有两行jnz这是判断语句，<br>我们需要的是跳转到之后的mov传参的过程，<br>注意这个传参传的是fopen的参数，<br>跳转到mov即可绕过判断获得flag</p>
+<h3 id="覆盖"><a href="#覆盖" class="headerlink" title="覆盖"></a>覆盖</h3><p>我写文章的目的主要是为了说明覆盖，我在网上看到了好多说的不可以覆盖，原因主要是因为参数a1和a2在ret的下面，因此出现了覆盖的一些细节问题，下面我详细说说<br>1.显而易见，我们可以看到参数的位置关系以及距离<br><img src="/../pic/get-started-3dsctf-2016/get2.png" srcset="/img/loading.gif" lazyload alt="alt text"><br>然后首先这道题我最初是覆盖做的，而后来我发现直接覆盖的话并没有得到想要的结果，原因就是因为中间有了一个ret，那么这个覆盖到底能不能实现判断正确从而获取flag呢？对此，我想说说我的理解，首先这个ret的位置是在[ebp+0]的位置，这意味着如果我们直接跳转到函数地址之后再加上参数，会出现这样一种情况<br>a1  对应   [ebp+0]<br>a2  对应   [ebp+4]<br>而实际上，对于这个实际情况来看，显然a1和a2的位置是出现在偏后一个字长的距离，那也就意味着这里似乎我们需要加一个“假”的地址来欺骗系统，以至于达到我们的目的—覆盖参数</p>
 <p>所以我们构造如下的payload</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ payload = p32(get_flag_addr) + p32(空白) + p32(real_a1) + p32(real_a2)<br></code></pre></td></tr></table></figure>
 
@@ -293,7 +293,7 @@
 <p>代码如下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ payload = b<span class="hljs-string">&#x27;a&#x27;</span>*56 +p32(0x80489A0)+ p32(0x804E6A0) + p32(814536271) + p32(425138641)<br></code></pre></td></tr></table></figure>
 
-<p>当然我们成功的获得了flag<br><img src="/.io//QQ%E5%9B%BE%E7%89%8720240507212841.png" srcset="/img/loading.gif" lazyload alt="alt text"></p>
+<p>当然我们成功的获得了flag<br><img src="/../pic/get-started-3dsctf-2016/get3.png" srcset="/img/loading.gif" lazyload alt="alt text"></p>
 <h3 id="泄露libc信息"><a href="#泄露libc信息" class="headerlink" title="泄露libc信息"></a>泄露libc信息</h3><p>这个具体就不说了，大家自行探索</p>
 
                 
